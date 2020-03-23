@@ -32,7 +32,7 @@
     display: inline;   
 }
 
-#books, #chapters {
+#books, #chapters, #sites {
     max-width: 15em;
 }
 
