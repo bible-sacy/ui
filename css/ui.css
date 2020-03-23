@@ -1,0 +1,92 @@
+.darkmode--activated  img {
+    filter: invert(100%);
+}
+
+#body {
+    margin-bottom: 0px;
+}
+
+#main {
+    margin: auto;
+    text-align: center;
+}
+
+#headerBarSection {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5em;    
+}
+
+#infoWindow {
+    margin-top: 0.2em;
+    margin-bottom: 0.4em;
+    text-align: center;
+}
+
+#bookInfo {
+    font-style: italic;
+}
+
+#book-form {
+    display: inline;   
+}
+
+#books, #chapters {
+    max-width: 15em;
+}
+
+#hideInfo {
+    margin-top: 0.3em;
+}
+
+#pageSelectorSection {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#pages {
+    max-width: 4em;
+}
+
+#prev-top, #next-top {
+    width: 20%;
+    font-weight: bold;
+}
+
+#page-form {
+    display: inline;  
+}
+
+#fautes {
+    margin-top: 0.2em;
+    font-weight: bold;
+    font-size: larger;
+}
+
+#hammer {
+    margin: auto;
+    text-align: center;
+}
+
+#page {
+    max-width: 50em;
+    width: 100%;
+    min-width: 20em;
+}
+
+#page-paire, #page-impaire {
+    max-width: 50em;
+    width: 47%;
+}
+
+#footerSection {
+    text-align: center;
+    margin: auto;
+}
+
+#prev-bottom, #next-bottom {
+    width: 30%;
+    font-weight: bold;
+}
