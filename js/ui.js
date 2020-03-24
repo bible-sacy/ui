@@ -7,6 +7,57 @@ const PDFS_BASE = `${BASE}pdfs`
 
 const CANONICAL_NODE = document.getElementById("canonical")
 
+const shortcuts = [
+    {
+        key: '→|a',
+        str: 'page suivante'
+    },
+    {
+        key: '←|r',
+        str: 'page précédente'
+    },
+    {
+        key: 'v',
+        str: 'basculer de mode d’affichage'
+    },
+    {
+        key: '+',
+        str: 'agrandir l’image'
+    },
+    {
+        key: '-',
+        str: 'rétrécir l’image'
+    },
+    {
+        key: 'p',
+        str: 'choisir la page'
+    },
+    {
+        key: 'c',
+        str: 'choisir le chapitre'
+    },
+    {
+        key: 'l',
+        str: 'choisir le livre'
+    },
+    {
+        key: 's',
+        str: 'choisir le site'
+    },
+    {
+        key: 'o|t',
+        str: 'dupliquer l’onglet'
+    },
+    {
+        key: 'q',
+        str: 'fermer l’onglet'
+    },
+    {
+        key: 'i',
+        str: 'cacher ou fermer ces informations'
+    }
+]
+
 const state = {
     loading: true,
     showInfo: false,
@@ -14,8 +65,11 @@ const state = {
     indexData: null, // content of index.json
     currentBook: null,
     bookData: null,  // content of <currentBook>.json
-    currentPage: null
+    currentPage: null,
+    zoom: 100, // pourcent
 }
+
+const myStorage = window.localStorage;
 
 const mutations = {
     /**
@@ -27,6 +81,15 @@ const mutations = {
         state.currentBook = currentBook
         state.currentPage = currentPage
         state.loading = false
+        const displayMode = myStorage.getItem('displayMode')
+        if (displayMode === 'onePage' || displayMode === 'twoPages')
+            state.displayMode = displayMode
+        const z = myStorage.getItem('zoom')
+        if (z) {
+            zoom = parseInt(z)
+            if (zoom && zoom > 10 && zoom < 300)
+                state.zoom = zoom
+        }
     },
     /**
      * Show or hide the info section.
@@ -39,6 +102,7 @@ const mutations = {
      */
     toggleDisplayMode (state) {
         state.displayMode = state.displayMode === 'onePage' ? 'twoPages' : 'onePage'
+        myStorage.setItem('displayMode', state.displayMode)
     },
     /**
      * Go to the given page of the same book.
@@ -57,6 +121,14 @@ const mutations = {
         state.bookData = bookData
         state.currentBook = currentBook
         state.currentPage = currentPage
+    },
+    incrZoom (state) {
+        state.zoom = state.zoom + 5
+        myStorage.setItem('zoom', state.zoom)
+    },
+    decrZoom (state) {
+        state.zoom = state.zoom - 5
+        myStorage.setItem('zoom', state.zoom)
     }
 }
 
@@ -132,6 +204,13 @@ const getNextBook = (state, key) => {
 }
 
 const getters  = {
+    pageStyle (state) {
+        if (state.loading) return ""
+        if (state.displayMode === 'onePage')
+            return `width: ${50 * state.zoom / 100}em`
+        else
+            return `width: ${50 * state.zoom / 100}em`
+    },
     /**
      * The list of links as { title, url } to display in the info div.
      */
@@ -324,6 +403,12 @@ const getters  = {
         const title = `p.${state.currentPage}-${chapterInRoman}-${getters.currentBookDisplayName} (${DOCUMENT_TITLE})`
         document.title = title
         return title
+    },
+    /**
+     * Shortcuts documentation
+     */
+    shortcuts () {
+        return shortcuts
     }
 }
 
@@ -455,6 +540,15 @@ const store = new Vuex.Store({
     actions
 })
 
+const focusOrBlur = (event, id) => {
+    event.preventDefault()
+    const e = document.getElementById(id)
+    if (e === document.activeElement)
+        e.blur()
+    else
+        e.focus()
+}
+
 fetch(`${UI_ENV.uiPath}/ui.html`)
 .then(res => res.text())
 .then(template => {
@@ -506,7 +600,9 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                 'pdfLink',
                 'errata',
                 'locationHash',
-                'title'
+                'title',
+                'pageStyle',
+                'shortcuts'
             ])
         },
         methods: {
@@ -529,9 +625,11 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
             },
             keyListener (event) {
                 switch (event.key) {
+                    case 'a':
                     case 'ArrowRight':
                         this.incrementPage()
                         break
+                    case 'r':
                     case 'ArrowLeft':
                         this.decrementPage()
                         break
@@ -540,12 +638,39 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                         break
                     case 'v':
                         this.toggleDisplayMode()
-                        break    
+                        break
+                    case 'p':
+                        focusOrBlur(event, 'pages')
+                        break
+                    case 'c':
+                        focusOrBlur(event, 'chapters')
+                        break
+                    case 'l':
+                        focusOrBlur(event, 'books')
+                        break
+                    case 's':
+                        focusOrBlur(event, 'sites')
+                        break
+                    case 'o':
+                    case 't':
+                        window.open(window.location, '_blank').focus()
+                        break
+                    case 'q':
+                        window.close()
+                        break
+                    case '+':
+                        this.incrZoom()
+                        break
+                    case '-':
+                        this.decrZoom()
+                        break
                 }    
             },
             ...Vuex.mapMutations([
                 'toggleInfo',
-                'toggleDisplayMode'
+                'toggleDisplayMode',
+                'incrZoom',
+                'decrZoom'
             ]),
             ...Vuex.mapActions([
                 'incrementPage',

@@ -3,7 +3,12 @@
 }
 
 #body {
-    margin-bottom: 0px;
+    margin: 0;
+    padding: 0;
+}
+
+#uiTemplate {
+    padding: 4px;
 }
 
 #main {
@@ -72,14 +77,13 @@
 }
 
 #page {
-    max-width: 50em;
-    width: 100%;
-    min-width: 20em;
+    max-width: 100%;
+    min-width: 15%;
 }
 
 #page-paire, #page-impaire {
-    max-width: 50em;
-    width: 47%;
+    max-width: 47%;
+    min-width: 7%;
 }
 
 #footerSection {

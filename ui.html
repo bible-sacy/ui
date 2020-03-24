@@ -2,6 +2,7 @@
 
     <div id="headerBarSection">
         <select name="sites" id="sites"
+            title="Changer de site (s)"
             v-on:change="changeSite($event.target.selectedOptions[0].value)"
             v-bind:value="canonical"
         >
@@ -18,6 +19,7 @@
         <div id="book-form">
             <label for="books">{{ bookSelectorLabel }}</label>
             <select name="books" id="books"
+                title="Change de livre (l)"
                 v-on:change="changeBook({ key: $event.target.selectedOptions[0].value })"
             >
                 <option
@@ -32,6 +34,7 @@
             |
             <label for="chapters">{{ chapterSelectorLabel }}</label>
             <select name="chapters" id="chapters"
+                title="Change de chapitre (c)"
                 v-bind:value="currentChapter ? currentChapter.title : null"
                 v-on:change="changeChapter($event.target.selectedOptions[0].value)"
             >
@@ -45,7 +48,7 @@
                 </option>
             </select>
             |
-            <button id="displayInfo" v-on:click="toggleInfo"><span id="infoIcon">ℹ</span>&nbsp;info</button>
+            <button id="displayInfo" v-on:click="toggleInfo" title="Informations (i)"><span id="infoIcon">ℹ</span>&nbsp;info</button>
         </div>
     </div>
 
@@ -55,31 +58,42 @@
         Page courante tirée de : <span id="bookInfo">{{ bookInfo }}</span>, <span id="editionInfo">{{ editionInfo }}</span>
         <a id="pdfLink" target="_blank" v-bind:href="pdfLink">(pdf original)</a>
         <br />
-        &nbsp;|&nbsp;
+        |
         <span v-for="link in links" :key="link.url">
-        <a v-bind:href="link.url" target="_blank">{{ link.title }}</a>&nbsp;|&nbsp;
+        <a v-bind:href="link.url" target="_blank">{{ link.title }}</a>|
         </span>
         <br />
-        <button id="hideInfo" v-on:click="toggleInfo"><small>❌&nbsp;cacher ces informations</small></button>
+        <i>Raccourcis clavier :</i>
+        <br />
+        <span v-for="shortcut in shortcuts" :key="shortcut.key">
+            &ThickSpace;<b>({{ shortcut.key }})&nbsp;:</b>&nbsp;{{ shortcut.str }}&ThickSpace;
+        </span>
+        <br />
+        <button id="hideInfo" v-on:click="toggleInfo" title="Cacher ces informations (i)"><small>❌&nbsp;cacher ces informations</small></button>
     </div>
 
     <hr />
 
     <div id="pageSelectorSection">
-        <button id="prev-top" v-on:click="decrementPage">&larr;</button>
+        <button id="prev-top" title="Page précédente (←|r)" v-on:click="decrementPage">&larr;</button>
         &nbsp;
-        <button id="toggleViewButton" v-on:click="toggleDisplayMode">
+        &nbsp;
+        <button title="Rétrécir l’image (-)" v-on:click="decrZoom">-</button>
+        <button title="Agrandir l’image (+)" v-on:click="incrZoom">+</button>
+        &nbsp;
+        <button id="toggleViewButton" title="Changer la vue (v)" v-on:click="toggleDisplayMode">
             {{ displayMode === 'onePage' ? '🗏🗏' : '🗏' }}
         </button>
         &nbsp;
         <div id="page-form">
-            <label for="pages">p.</label>
-            <input type="number" id="pages" name="pages" v-bind:value="currentPage" v-on:change="changePage(parseInt($event.target.value))" />
+            <label for="pages" title="Page">p.</label>
+            <input type="number" id="pages" name="pages" title="Page (p)" v-bind:value="currentPage" v-on:change="changePage(parseInt($event.target.value))" />
         </div>
         &nbsp;
-        <button onclick="window.open(window.location, '_blank').focus()" >✚&nbsp;onglet</button>
+        <button onclick="window.open(window.location, '_blank').focus()" title="Ouvrir un nouvel onglet (o|t)">✚&nbsp;onglet</button>
         &nbsp;
-        <button id="next-top" v-on:click="incrementPage">&rarr;</button>
+        &nbsp;
+        <button id="next-top" title="Page suivante (→|a)" v-on:click="incrementPage">&rarr;</button>
     </div>
 
     <div id="fautes" v-if="errata && errata.length > 0">
@@ -94,21 +108,21 @@
 
     <div id="hammer">
         <div v-if="displayMode === 'onePage'" class="image">
-            <img id="page" v-bind:src="currentPageImgSrc" />
+            <img id="page" v-bind:src="currentPageImgSrc" v-bind:style="pageStyle" />
         </div>
 
         <div v-if="displayMode === 'twoPages'" class="image">
-            <img id="page-paire" v-bind:src="currentPageImgPaireSrc" />
-            <img id="page-impaire" v-bind:src="currentPageImgImpaireSrc" />
+            <img id="page-paire" v-bind:src="currentPageImgPaireSrc" v-bind:style="pageStyle"  />
+            <img id="page-impaire" v-bind:src="currentPageImgImpaireSrc" v-bind:style="pageStyle"  />
         </div>
     </div>
 
     <div style="display: none">{{ title }} : {{ locationHash }}</div>
 
     <div id="footerSection">
-        <button id="prev-bottom" v-on:click="decrementPage">&larr;</button>
+        <button id="prev-bottom" title="Page précédente (←|r)" v-on:click="decrementPage">&larr;</button>
         &nbsp;&nbsp;
-        <button id="next-bottom" v-on:click="incrementPage">&rarr;</button>
+        <button id="next-bottom" title="Page suivante (→|a)" v-on:click="incrementPage">&rarr;</button>
     </div>
 
 </div>
