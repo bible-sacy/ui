@@ -16,11 +16,16 @@
     text-align: center;
 }
 
+select, input {
+    height: 1.8em;
+}
+
 #headerBarSection {
     text-align: center;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 0.5em;    
+    margin-bottom: 0.3em;
+    margin-top: 0.3em;
 }
 
 #infoWindow {
@@ -74,16 +79,28 @@
 #hammer {
     margin: auto;
     text-align: center;
+    padding-top: 0.5em;
+    padding-bottom: 0.2em;
+}
+
+.borders {
+    border-style: solid;
+    border-width: 1px;
+    border-color: gray;
 }
 
 #page {
-    max-width: 100%;
-    min-width: 15%;
+    max-width: 130%;
+    min-width: 10%;
 }
 
 #page-paire, #page-impaire {
-    max-width: 47%;
-    min-width: 7%;
+    max-width: 49%;
+    min-width: 5%;
+}
+
+.hover-cursor:hover {
+    cursor: pointer;
 }
 
 #footerSection {
@@ -105,3 +122,7 @@
         max-width: 8em;
     }
   }
+
+.darkmode-toggle {
+    z-index: 10 !important;
+}

@@ -666,6 +666,15 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                         break
                 }    
             },
+            incrOrDecrFromPage (event) {
+                const x = event.clientX - event.target.offsetLeft;
+                const width = event.target.width;
+                if (x > width / 2) {
+                    this.incrementPage()
+                } else {
+                    this.decrementPage()
+                }            
+            },
             ...Vuex.mapMutations([
                 'toggleInfo',
                 'toggleDisplayMode',
