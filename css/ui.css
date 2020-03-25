@@ -8,7 +8,12 @@
 }
 
 #uiTemplate {
-    padding: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+div.image {
+    font-size: 0;
 }
 
 #main {
@@ -90,13 +95,15 @@ select, input {
 }
 
 #page {
-    max-width: 130%;
+    max-width: 100%;
     min-width: 10%;
+    font-size: medium;
 }
 
 #page-paire, #page-impaire {
     max-width: 49%;
     min-width: 5%;
+    font-size: medium;
 }
 
 .hover-cursor:hover {
