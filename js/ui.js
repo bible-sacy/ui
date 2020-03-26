@@ -67,9 +67,20 @@ const state = {
     bookData: null,  // content of <currentBook>.json
     currentPage: null,
     zoom: 100, // pourcent
+    brightness: 100,
+    darkmode: false
 }
 
 const myStorage = window.localStorage;
+
+const setPercentFromStorage = (storage, attr, state) => {
+    const i = storage.getItem(attr)
+    if (i) {
+        value = parseInt(i)
+        if (value && value > 10 && value < 300)
+            state[attr] = value
+    }
+}
 
 const mutations = {
     /**
@@ -84,12 +95,10 @@ const mutations = {
         const displayMode = myStorage.getItem('displayMode')
         if (displayMode === 'onePage' || displayMode === 'twoPages')
             state.displayMode = displayMode
-        const z = myStorage.getItem('zoom')
-        if (z) {
-            zoom = parseInt(z)
-            if (zoom && zoom > 10 && zoom < 300)
-                state.zoom = zoom
-        }
+        setPercentFromStorage(myStorage, 'zoom', state)
+        setPercentFromStorage(myStorage, 'brightness', state)
+        const darkmode = myStorage.getItem('darkmode')
+        state.darkmode = (darkmode === true || darkmode === 'true')
     },
     /**
      * Show or hide the info section.
@@ -129,6 +138,28 @@ const mutations = {
     decrZoom (state) {
         state.zoom = state.zoom - 5
         myStorage.setItem('zoom', state.zoom)
+    },
+    incrBrightness (state) {
+        if (state.brightness < 150) {
+            state.brightness = state.brightness + 5
+            myStorage.setItem('brightness', state.brightness)
+        }
+    },
+    decrBrightness (state) {
+        if (state.brightness > 50) {
+            state.brightness = state.brightness - 5
+            myStorage.setItem('brightness', state.brightness)
+        }
+    },
+    changeBrightness (state, value) {
+        if (value >= 50 && value <= 150) {
+            state.brightness = value
+            myStorage.setItem('brightness', state.brightness)
+        }
+    },
+    toggleDarkmode (state) {
+        state.darkmode = !state.darkmode
+        myStorage.setItem('darkmode', state.darkmode)
     }
 }
 
@@ -285,6 +316,7 @@ const getters  = {
             if (i < state.bookData.chapters.length - 1)
                 last = state.bookData.chapters[i+1][1] - 1
             l.push({
+                key: `${c[0]}-${c[1]}`,
                 roman: convertToRoman(c[0]),
                 title: c[0],
                 page: c[1],
@@ -551,10 +583,10 @@ const focusOrBlur = (event, id) => {
 
 fetch(`${UI_ENV.uiPath}/ui.html`)
 .then(res => res.text())
-.then(template => {
+.then(bodyInnerHtml => {
+    document.getElementsByTagName('div')[0].innerHTML += bodyInnerHtml
     new Vue({
         store,
-        template,
         el: '#uiContainer',
         created () {
             this.$store.dispatch('fetchInitData', window.location.hash)
@@ -582,6 +614,8 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                 'displayMode',
                 'currentBook',
                 'currentPage',
+                'brightness',
+                'darkmode'
               ]),
             ...Vuex.mapGetters([
                 'links',
@@ -679,7 +713,11 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                 'toggleInfo',
                 'toggleDisplayMode',
                 'incrZoom',
-                'decrZoom'
+                'decrZoom',
+                'changeBrightness',
+                'incrBrightness',
+                'decrBrightness',
+                'toggleDarkmode'
             ]),
             ...Vuex.mapActions([
                 'incrementPage',

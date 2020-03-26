@@ -2,7 +2,7 @@
     filter: invert(100%);
 }
 
-#body {
+body {
     margin: 0;
     padding: 0;
 }
@@ -10,6 +10,9 @@
 #uiTemplate {
     padding-top: 4px;
     padding-bottom: 4px;
+    width: 100%;
+    height: 100%;
+    /*background-color: white;*/
 }
 
 div.image {
@@ -128,8 +131,65 @@ select, input {
     #books, #chapters, #sites {
         max-width: 8em;
     }
-  }
+}
 
 .darkmode-toggle {
+    background: #100f2c;
+    width: 3rem;
+    height: 3rem;
+    position: fixed;
+    border-radius: 50%;
+    right: 1em;
+    bottom: 1em;
+    left: unset;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     z-index: 10 !important;
+    color: white;
+    font-weight: bold;
+  }
+
+.darkmode-range {
+    position: fixed;
+    left: unset;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: all 0.5s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10 !important;
+    background-color: #100f2c;
+    color: white;
+    font-weight: bold;
+    height: 2em;
+    bottom: 8em !important;
+    right: -1.6em;
 }
+
+.brightnessRange {
+    width: 5em;
+}
+
+#brightnessRangeDiv {
+    transform: rotateZ(270deg);
+ }
+
+  .darkmode-toggle--white {
+    background-color: #dddddd;
+  }
+
+  .darkmode-background {
+    background: #fff;
+    position: fixed;
+    pointer-events: none;
+    z-index: -10;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+

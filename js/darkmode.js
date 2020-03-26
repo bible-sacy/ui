@@ -1,3 +1,4 @@
+/*
 (function() {
     new Darkmode({
         bottom: '1em',
@@ -6,3 +7,4 @@
         label: '🌓'
     }).showWidget();
 })()
+*/

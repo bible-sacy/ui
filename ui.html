@@ -1,4 +1,7 @@
-<div id="uiTemplate">
+
+<div class="darkmode-background" v-bind:style="`filter: ${darkmode ? 'invert(100%)' : ''} brightness(${brightness}%)`"></div>
+
+<div id="uiTemplate" v-bind:style="`filter: ${darkmode ? 'invert(100%)' : ''} brightness(${brightness}%)`">
 
     <div id="headerBarSection">
         <select name="sites" id="sites"
@@ -42,7 +45,7 @@
             >
                 <option
                     v-for="chapter in chapters"
-                    :key="chapter.title"
+                    :key="chapter.key"
                     v-bind:value="chapter.title"
                     v-bind:selected="currentChapter && chapter.title === currentChapter.title"
                 >
@@ -127,3 +130,10 @@
     </div>
 
 </div>
+
+<div v-bind:class="'darkmode-range' + (darkmode ? ' darkmode-toggle--white' : '' )" id="brightnessRangeDiv">
+<input id="brightnessRange" type="range" v-bind:value="brightness" min="50" max="150"
+    v-on:click="changeBrightness(parseInt($event.target.value))"
+/>
+</div>
+<div v-bind:class="'darkmode-toggle' + (darkmode ? ' darkmode-toggle--white' : '' )" v-on:click="toggleDarkmode">🌓</div>
