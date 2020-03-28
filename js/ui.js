@@ -182,27 +182,47 @@ const getImgSrc =  (state, number) => {
 }
 
 /**
- * Returns the even page number that should
+ * Returns the even (left) page number that should
  * be displayed when displayMode is "twoPages".
+ * If it does not exist, returns null.
  */
 const getPagePaire = (state) => {
     if (state.loading) return null
     const page = state.currentPage
-    return ((page % 2) == 0) ? page : page - 1
+    const pagePaire = ((page % 2) == 0) ? page : page - 1
+    if (pagePaire >= state.bookData.min && pagePaire <= state.bookData.max)
+        return pagePaire
+    else
+        return null
 }
 
 /**
- * Returns the odd page number that should
+ * Returns the odd (right) page number that should
  * be displayed when displayMode is "twoPages".
+ * If it does not exist, returns null.
  */
-const getPageImpaire = (state) => getPagePaire(state) + 1
+const getPageImpaire = (state) => {
+    if (state.loading) return null
+    const page = state.currentPage
+    const pageImpaire = ((page % 2) == 0) ? page + 1 : page
+    if (pageImpaire >= state.bookData.min && pageImpaire <= state.bookData.max)
+        return pageImpaire
+    else
+        return null
+}
 
 /**
  * Returns the right page number when displayMode is "twoPages",
  * or the shown page number when displayMode is "onePage".
  */
 const getRightOrOnlyPage = (state) => {
-    if (state.displayMode === 'twoPages') return getPageImpaire(state)
+    if (state.displayMode === 'twoPages') {
+        const pageImpaire = getPageImpaire(state)
+        if (pageImpaire === null)
+            return getPagePaire(state)
+        else
+            return pageImpaire
+    }
     return state.currentPage
 }
 
@@ -274,10 +294,21 @@ const getters  = {
      */
     pageStyle (state) {
         if (state.loading) return ""
-        if (state.displayMode === 'onePage')
-            return `width: ${50 * state.zoom / 100}em`
+        return `width: ${50 * state.zoom / 100}em`
+    },
+    pageImpaireStyle (state) {
+        if (state.loading) return ""
+        if (getPageImpaire(state) === null)
+            return `width: ${50 * state.zoom / 100}em; visibility: hidden;`
         else
-            return `width: ${50 * state.zoom / 100}em`
+            return `width: ${50 * state.zoom / 100}em;`
+    },
+    pagePaireStyle (state) {
+        if (state.loading) return ""
+        if (getPagePaire(state) === null)
+            return `width: ${50 * state.zoom / 100}em; visibility: hidden;`
+        else
+            return `width: ${50 * state.zoom / 100}em;`
     },
     /**
      * The list of links as { title, url } to display in the info div.
@@ -398,16 +429,27 @@ const getters  = {
      * The src of the left (even) image, when displayMode is 'twoPages'.
      */
     currentPageImgPaireSrc (state) {
-        const numPair = state.bookData.offset + getPagePaire(state)
-        return getImgSrc(state, numPair)
+        if (state.loading) return null
+        const pagePaire = getPagePaire(state)
+        if (pagePaire === null) {
+            return null
+        } else {
+            const numPair = state.bookData.offset + pagePaire
+            return getImgSrc(state, numPair)
+        }
     },
     /**
      * The src of the right (odd) image, when displayMode is 'twoPages'.
      */
     currentPageImgImpaireSrc (state) {
         if (state.loading) return null
-        const numImpair = state.bookData.offset + getPageImpaire(state)
-        return getImgSrc(state, numImpair)
+        const pageImpaire = getPageImpaire(state)
+        if (pageImpaire === null) {
+            return null
+        } else {
+            const numImpair = state.bookData.offset + pageImpaire
+            return getImgSrc(state, numImpair)
+        }
     },
     /**
      * Book name shown on the info div.
@@ -553,13 +595,18 @@ const actions = {
      * Page increment from a button, or gesture.
      */
     incrementPage ({ commit, state, dispatch, getters }) {
-        const page = getRightOrOnlyPage(state) + (state.displayMode === 'twoPages' ? 2 : 1)
+        var page = getRightOrOnlyPage(state) + (state.displayMode === 'twoPages' ? 2 : 1)
         if (page >= state.bookData.min && page <= state.bookData.max) {
             commit('changePageInSameBook', page)
         } else {
-            // go to the next book if applicable
-            if (getters.nextBook)
-                dispatch('changeBook', { key: getters.nextBook, page : 'min' })
+            page = getRightOrOnlyPage(state) + 1
+            if ((state.displayMode === 'twoPages') && (page >= state.bookData.min && page <= state.bookData.max)) {
+                commit('changePageInSameBook', page)
+            } else {
+                // go to the next book if applicable
+                if (getters.nextBook)
+                    dispatch('changeBook', { key: getters.nextBook, page : 'min' })
+            }
         }
         if (state.displayMode === 'onePage') // scroll to the top
             document.body.scrollTop = document.documentElement.scrollTop = 0
@@ -568,13 +615,18 @@ const actions = {
      * Page decrement from a button, or gesture.
      */
     decrementPage ({ commit, state, dispatch, getters }) {
-        const page = getRightOrOnlyPage(state) - (state.displayMode === 'twoPages' ? 2 : 1)
+        var page = getRightOrOnlyPage(state) - (state.displayMode === 'twoPages' ? 2 : 1)
         if (page >= state.bookData.min && page <= state.bookData.max) {
             commit('changePageInSameBook', page)
         } else {
-            // go to the previous book if applicable
-            if (getters.previousBook)
-                dispatch('changeBook', { key: getters.previousBook, page: 'max' })
+            page = getRightOrOnlyPage(state) - 1
+            if ((state.displayMode === 'twoPages') && (page >= state.bookData.min && page <= state.bookData.max)) {
+                commit('changePageInSameBook', page)
+            } else {
+                // go to the previous book if applicable
+                if (getters.previousBook)
+                    dispatch('changeBook', { key: getters.previousBook, page: 'max' })
+            }
         }
     },
     /**
@@ -708,6 +760,8 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                 'locationHash',
                 'title',
                 'pageStyle',
+                'pagePaireStyle',
+                'pageImpaireStyle',
                 'shortcuts'
             ])
         },

@@ -113,8 +113,8 @@
         </div>
 
         <div v-if="displayMode === 'twoPages'" class="image">
-            <img id="page-paire" class="hover-cursor borders" v-on:click="decrementPage" v-bind:src="currentPageImgPaireSrc" v-bind:style="pageStyle"  />
-            <img id="page-impaire" class="hover-cursor borders" v-on:click="incrementPage" v-bind:src="currentPageImgImpaireSrc" v-bind:style="pageStyle"  />
+            <img id="page-paire" class="hover-cursor borders" v-on:click="decrementPage" v-bind:src="currentPageImgPaireSrc" v-bind:style="pagePaireStyle"  />
+            <img id="page-impaire" class="hover-cursor borders" v-on:click="incrementPage" v-bind:src="currentPageImgImpaireSrc" v-bind:style="pageImpaireStyle"  />
         </div>
     </div>
 
