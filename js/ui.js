@@ -505,7 +505,7 @@ const getters  = {
     /**
      * Errata, as { href, book, page }.
      */
-    errata (state) {
+    errata (state, getters) {
         if (state.loading) return null
         const errata = []
         const folderInfo = state.indexData.folders[state.bookData.folder]
@@ -651,7 +651,7 @@ const actions = {
     /**
      * Changes the book.
      */
-    changeBook ({ commit }, { key, page }) {
+    changeBook ({ commit, state, getters, dispatch }, { key, page }) {
         fetch(`${BASE}jsons/${key}.json`)
         .then(response => response.json())
         .then(bookData => {
@@ -660,7 +660,7 @@ const actions = {
                 currentPage = bookData.max
             } else if (page == 'min') {
                 currentPage = bookData.min
-            } else if (Number.isInteger(page) && page >= bookData.min && page <= bookData.max) {
+            } else if (Number.isInteger(page)) {
                 currentPage = page
             }
             if (currentPage >= bookData.min && currentPage <= bookData.max) {
@@ -674,12 +674,12 @@ const actions = {
                 if (currentPage > bookData.max && (nextBook = getters.nextBookOfKey(key))) {
                     dispatch('changeBook', {
                         key: nextBook,
-                        page: newValue
+                        page
                     })
                 } else if (currentPage < bookData.min && (previousBook = getters.previousBookOfKey(key))) {
                     dispatch('changeBook', {
                         key: previousBook,
-                        page: newValue
+                        page
                     })
                 }    
             }
