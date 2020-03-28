@@ -493,9 +493,13 @@ const getters  = {
     }
 }
 
+/**
+ * Actions for Vuex.
+ */
 const actions = {
     /**
-     * Called at the main component creation.
+     * Called at the main component creation and when
+     * the location hash changes from the outside.
      */
     fetchInitData ({ commit }, locationHash) {
         fetch(`${BASE}index.json`)
@@ -504,8 +508,13 @@ const actions = {
             var currentBook = indexData.default
             var currentPage = null 
             if (locationHash && (m = locationHash.match(/#\/(.+)\/(.+)/))) {
-                currentBook = m[1]
-                currentPage = parseInt(m[2])
+                locationBook = m[1]
+                if (indexData.books.find(a => a[0] === locationBook)) {
+                    currentBook = locationBook
+                    currentPage = parseInt(m[2])
+                } else {
+                    console.warn("Unknown book in the location hash:", locationBook)
+                }
             }
             fetch(`${BASE}jsons/${currentBook}.json`)
             .then(response => response.json())
