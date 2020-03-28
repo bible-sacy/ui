@@ -1,12 +1,33 @@
 const ui_init = (UI_ENV) => {
 
+/**
+ * Title of the document.
+ */
 const DOCUMENT_TITLE = UI_ENV.title
+
+/**
+ * Canonical URL of the document.
+ */
 const CANONICAL = UI_ENV.canonical
+
+/**
+ * Where to fetch the data.
+ */
 const BASE = UI_ENV.dataBasePath
+
+/**
+ * Where to fetch the pdf documents.
+ */
 const PDFS_BASE = `${BASE}pdfs`
 
+/**
+ * Node in the head section: <link id="canonical" rel="canonical" href="…" />
+ */
 const CANONICAL_NODE = document.getElementById("canonical")
 
+/**
+ * Shortcuts documentation data, shown on the "info" div.
+ */
 const shortcuts = [
     {
         key: '→|a',
@@ -58,6 +79,9 @@ const shortcuts = [
     }
 ]
 
+/**
+ * Initial state for Vuex.
+ */
 const state = {
     loading: true,
     showInfo: false,
@@ -69,8 +93,14 @@ const state = {
     zoom: 100, // pourcent
 }
 
+/**
+ * Browser local storage to recorde the ui settings (zoom, displayMode…)
+ */
 const myStorage = window.localStorage;
 
+/**
+ * Mutations for Vuex.
+ */
 const mutations = {
     /**
      * Set the initial state.
@@ -122,10 +152,16 @@ const mutations = {
         state.currentBook = currentBook
         state.currentPage = currentPage
     },
+    /**
+     * Increases the page size.
+     */
     incrZoom (state) {
         state.zoom = state.zoom + 5
         myStorage.setItem('zoom', state.zoom)
     },
+    /**
+     * Decreases the page size.
+     */
     decrZoom (state) {
         state.zoom = state.zoom - 5
         myStorage.setItem('zoom', state.zoom)
@@ -145,19 +181,36 @@ const getImgSrc =  (state, number) => {
     }
 }
 
+/**
+ * Returns the even page number that should
+ * be displayed when displayMode is "twoPages".
+ */
 const getPagePaire = (state) => {
     if (state.loading) return null
     const page = state.currentPage
     return ((page % 2) == 0) ? page : page - 1
 }
 
+/**
+ * Returns the odd page number that should
+ * be displayed when displayMode is "twoPages".
+ */
 const getPageImpaire = (state) => getPagePaire(state) + 1
 
+/**
+ * Returns the right page number when displayMode is "twoPages",
+ * or the shown page number when displayMode is "onePage".
+ */
 const getRightOrOnlyPage = (state) => {
     if (state.displayMode === 'twoPages') return getPageImpaire(state)
     return state.currentPage
 }
 
+/**
+ * If the argument is a number, returns
+ * it with roman figures.
+ * Else, returns the input.
+ */
 const convertToRoman = (num) => {
     if (!Number.isInteger(num)) return num
     var roman = {
@@ -186,6 +239,10 @@ const convertToRoman = (num) => {
     return str;
 }
 
+/**
+ * Returns the book key before the one with the given key,
+ * or null if it is the first book.
+ */
 const getPreviousBook = (state, key) => {
     if (state.loading) return null
     const idx = state.indexData.books.findIndex(a => a[0] == key)
@@ -195,6 +252,10 @@ const getPreviousBook = (state, key) => {
         return null
 }
 
+/**
+ * Returns the book key after the one with the given key,
+ * or null if it is the last book.
+ */
 const getNextBook = (state, key) => {
     const idx = state.indexData.books.findIndex(a => a[0] == key)
     if (idx + 1 < state.indexData.books.length)
@@ -203,7 +264,14 @@ const getNextBook = (state, key) => {
         return null
 }
 
+/**
+ * Getters for Vuex.
+ */
 const getters  = {
+    /**
+     * Returns the CSS style to apply to the img node(s)
+     * displaying the page(s).
+     */
     pageStyle (state) {
         if (state.loading) return ""
         if (state.displayMode === 'onePage')
@@ -273,8 +341,14 @@ const getters  = {
         return getNextBook(state, state.currentBook)
     },
     /**
-     * The list of chapters of the current book as {title, page, next},
-     * where next is the last page of the chapter.
+     * The list of chapters of the current book as
+     *   { title, page, last, roman, key },
+     * where:
+     * "title" is the name,
+     * "roman" the name in roman figures, if it is a number,
+     * "page" is the first page,
+     * "last" is the last page,
+     * "key" is "title-page"
      */
     chapters (state) {
         if (state.loading) return null
@@ -288,14 +362,21 @@ const getters  = {
                 roman: convertToRoman(c[0]),
                 title: c[0],
                 page: c[1],
+                key: `${c[0]}-${c[1]}`, // Unique key.
                 last
             })
         }
         return l
     },
     /**
-     * Returns the current chapter as {title, page, next},
-     * where next is the last page of the chapter.
+     * Returns the current chapter as
+     * { title, page, last, roman, key },
+     * where:
+     * "title" is the name,
+     * "roman" the name in roman figures, if it is a number,
+     * "page" is the first page,
+     * "last" is the last page,
+     * "key" is "title-page"
      */
     currentChapter (state, getters) {
         if (state.loading) return null
@@ -306,7 +387,7 @@ const getters  = {
         )[0]
     },
     /**
-     * The src of the image, whene displayMode is 'onePage'.
+     * The src of the image, when displayMode is 'onePage'.
      */
     currentPageImgSrc (state) {
         if (state.loading) return null
@@ -314,14 +395,14 @@ const getters  = {
         return getImgSrc(state, number)
     },
     /**
-     * The src of the left image, when displayMode is 'twoPages'
+     * The src of the left (even) image, when displayMode is 'twoPages'.
      */
     currentPageImgPaireSrc (state) {
         const numPair = state.bookData.offset + getPagePaire(state)
         return getImgSrc(state, numPair)
     },
     /**
-     * The src of the right image, when displayMode is 'twoPages'
+     * The src of the right (odd) image, when displayMode is 'twoPages'.
      */
     currentPageImgImpaireSrc (state) {
         if (state.loading) return null
@@ -344,7 +425,7 @@ const getters  = {
         return info[1] + ", " + info[2]
     },
     /**
-     * href of the pdf
+     * Location of the pdf.
      */
     pdfLink (state) {
         if (state.loading) return null
@@ -358,7 +439,7 @@ const getters  = {
         }
     },
     /**
-     * Errata, as { href, book, page }
+     * Errata, as { href, book, page }.
      */
     errata (state) {
         if (state.loading) return null
@@ -405,7 +486,7 @@ const getters  = {
         return title
     },
     /**
-     * Shortcuts documentation
+     * Shortcuts documentation.
      */
     shortcuts () {
         return shortcuts
@@ -533,6 +614,9 @@ const actions = {
     }
 }
 
+/**
+ * The Vuex store.
+ */
 const store = new Vuex.Store({
     state,
     getters,
@@ -540,6 +624,11 @@ const store = new Vuex.Store({
     actions
 })
 
+/**
+ * Used by the keyboard shortcuts, it focuses
+ * the node with the given id, or blurs it
+ * if it is already focused.
+ */
 const focusOrBlur = (event, id) => {
     event.preventDefault()
     const e = document.getElementById(id)
@@ -549,18 +638,25 @@ const focusOrBlur = (event, id) => {
         e.focus()
 }
 
+/**
+ * Fetches the Vue template (ui.html)
+ * and initializes Vue with the Vuex store.
+ */
 fetch(`${UI_ENV.uiPath}/ui.html`)
 .then(res => res.text())
 .then(template => {
     new Vue({
-        store,
-        template,
+        store, // Our Vuex store.
+        template, // The fetched content of the ui.html file.
         el: '#uiContainer',
         created () {
+            // Shows the default data.
             this.$store.dispatch('fetchInitData', window.location.hash)
+            // Sets up the keyboard shortcuts.
             window.addEventListener('keydown', this.keyListener)
         },
         mounted () {
+            // Sets up the swipe navigation.
             const swipeElement = document.getElementById('hammer');
             if (swipeElement == null)
                 console.warn("mounted: null element for hammer!")
@@ -569,6 +665,7 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                 mc.on('swipeleft', () => this.incrementPage())
                 mc.on('swiperight', () => this.decrementPage())
             }
+            // Sets up the navigation by changing the location hash.
             window.addEventListener('popstate', this.popStateListener)
         },
         destroyed () {
@@ -606,9 +703,16 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
             ])
         },
         methods: {
+            /**
+             * Changes the site when another site is selected
+             * on the sites select node.
+             */
             changeSite (url) {
                 window.location = url
             },
+            /**
+             * When the location hash changes, updates the state.
+             */
             popStateListener () {
                 if (this.$store.loading) return
                 const hash = window.location.hash
@@ -623,6 +727,10 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                     }
                 }    
             },
+            /**
+             * Implements the keyboard shortcuts.
+             * @param {*} event the keydown event.
+             */
             keyListener (event) {
                 switch (event.key) {
                     case 'a':
@@ -666,12 +774,19 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                         break
                 }    
             },
+            /**
+             * Navigates to the next or previous page by clicking on the
+             * left or right part of the image, when displayMode is "onePage".
+             * @param {*} event  the click event on the img node
+             */
             incrOrDecrFromPage (event) {
                 const x = event.clientX - event.target.offsetLeft;
                 const width = event.target.width;
                 if (x > width / 2) {
+                    // Click on the right part.
                     this.incrementPage()
                 } else {
+                    // Click on the left part.
                     this.decrementPage()
                 }            
             },

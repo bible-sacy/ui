@@ -42,7 +42,7 @@
             >
                 <option
                     v-for="chapter in chapters"
-                    :key="chapter.title"
+                    :key="chapter.key"
                     v-bind:value="chapter.title"
                     v-bind:selected="currentChapter && chapter.title === currentChapter.title"
                 >
