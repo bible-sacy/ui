@@ -169,64 +169,6 @@ const mutations = {
 }
 
 /**
- * Returns the img src from the state and the image number.
- */
-const getImgSrc =  (state, number) => {
-    const folder = state.bookData.folder
-    if (folder.match('/')) {
-        const [suffix, f] = folder.split('/', 2)
-        return `${BASE}pngs${suffix}/${f}/${f}-${number}.png`
-    } else {
-        return `${BASE}pngs/${folder}/${folder}-${number}.png`
-    }
-}
-
-/**
- * Returns the even (left) page number that should
- * be displayed when displayMode is "twoPages".
- * If it does not exist, returns null.
- */
-const getPagePaire = (state) => {
-    if (state.loading) return null
-    const page = state.currentPage
-    const pagePaire = ((page % 2) == 0) ? page : page - 1
-    if (pagePaire >= state.bookData.min && pagePaire <= state.bookData.max)
-        return pagePaire
-    else
-        return null
-}
-
-/**
- * Returns the odd (right) page number that should
- * be displayed when displayMode is "twoPages".
- * If it does not exist, returns null.
- */
-const getPageImpaire = (state) => {
-    if (state.loading) return null
-    const page = state.currentPage
-    const pageImpaire = ((page % 2) == 0) ? page + 1 : page
-    if (pageImpaire >= state.bookData.min && pageImpaire <= state.bookData.max)
-        return pageImpaire
-    else
-        return null
-}
-
-/**
- * Returns the right page number when displayMode is "twoPages",
- * or the shown page number when displayMode is "onePage".
- */
-const getRightOrOnlyPage = (state) => {
-    if (state.displayMode === 'twoPages') {
-        const pageImpaire = getPageImpaire(state)
-        if (pageImpaire === null)
-            return getPagePaire(state)
-        else
-            return pageImpaire
-    }
-    return state.currentPage
-}
-
-/**
  * If the argument is a number, returns
  * it with roman figures.
  * Else, returns the input.
@@ -260,34 +202,88 @@ const convertToRoman = (num) => {
 }
 
 /**
- * Returns the book key before the one with the given key,
- * or null if it is the first book.
- */
-const getPreviousBook = (state, key) => {
-    if (state.loading) return null
-    const idx = state.indexData.books.findIndex(a => a[0] == key)
-    if (idx - 1 >= 0)
-        return state.indexData.books[idx - 1][0]
-    else
-        return null
-}
-
-/**
- * Returns the book key after the one with the given key,
- * or null if it is the last book.
- */
-const getNextBook = (state, key) => {
-    const idx = state.indexData.books.findIndex(a => a[0] == key)
-    if (idx + 1 < state.indexData.books.length)
-        return state.indexData.books[idx + 1][0]
-    else
-        return null
-}
-
-/**
  * Getters for Vuex.
  */
 const getters  = {
+    /**
+     * Returns the odd (right) page number that should
+     * be displayed when displayMode is "twoPages".
+     * If it does not exist, returns null.
+     */
+    pageImpaire (state) {
+        if (state.loading) return null
+        const page = state.currentPage
+        const pageImpaire = ((page % 2) == 0) ? page + 1 : page
+        if (pageImpaire >= state.bookData.min && pageImpaire <= state.bookData.max)
+            return pageImpaire
+        else
+            return null
+    },
+    /**
+     * Returns the even (left) page number that should
+     * be displayed when displayMode is "twoPages".
+     * If it does not exist, returns null.
+     */
+    pagePaire (state) {
+        if (state.loading) return null
+        const page = state.currentPage
+        const pagePaire = ((page % 2) == 0) ? page : page - 1
+        if (pagePaire >= state.bookData.min && pagePaire <= state.bookData.max)
+            return pagePaire
+        else
+            return null
+    },
+    /**
+     * Returns the next page, or null.
+     */
+    nextPage (state, getters) {
+        if (state.loading) return null
+        var nextPage = state.currentPage + 1
+        if (state.displayMode === 'twoPages') {
+            if (getters.pageImpaire === null) {
+                nextPage = getters.pagePaire + 1
+            } else {
+                nextPage = getters.pageImpaire + 1
+            }
+        }
+        if (nextPage >= state.bookData.min && nextPage <= state.bookData.max)
+            return nextPage
+        else
+            return null
+    },
+    /**
+     * Returns the previous page, or null.
+     */
+    previousPage (state, getters) {
+        if (state.loading) return null
+        var previousPage = state.currentPage - 1
+        if (state.displayMode === 'twoPages') {
+            if (getters.pagePaire === null) {
+                previousPage = getters.pageImpaire - 1
+            } else {
+                previousPage = getters.pagePaire - 1
+            }
+        }
+        if (previousPage >= state.bookData.min && previousPage <= state.bookData.max)
+            return previousPage
+        else
+            return null
+    },
+    /**
+     * Returns the img src from the state and the image number.
+     */
+    imgSrc (state) {
+        return (number) => {
+            if (state.loading) return null
+            const folder = state.bookData.folder
+            if (folder.match('/')) {
+                const [suffix, f] = folder.split('/', 2)
+                return `${BASE}pngs${suffix}/${f}/${f}-${number}.png`
+            } else {
+                return `${BASE}pngs/${folder}/${folder}-${number}.png`
+            }
+        }
+    },
     /**
      * Returns the CSS style to apply to the img node(s)
      * displaying the page(s).
@@ -296,16 +292,16 @@ const getters  = {
         if (state.loading) return ""
         return `width: ${50 * state.zoom / 100}em`
     },
-    pageImpaireStyle (state) {
+    pageImpaireStyle (state, getters) {
         if (state.loading) return ""
-        if (getPageImpaire(state) === null)
+        if (getters.pageImpaire === null)
             return `width: ${50 * state.zoom / 100}em; visibility: hidden;`
         else
             return `width: ${50 * state.zoom / 100}em;`
     },
-    pagePaireStyle (state) {
+    pagePaireStyle (state, getters) {
         if (state.loading) return ""
-        if (getPagePaire(state) === null)
+        if (getters.pagePaire === null)
             return `width: ${50 * state.zoom / 100}em; visibility: hidden;`
         else
             return `width: ${50 * state.zoom / 100}em;`
@@ -358,18 +354,44 @@ const getters  = {
         }})
     },
     /**
-     * Name (key) of the previous book, if it exists.
+     * Returns the book key before the one with the given key,
+     * or null if it is the first book.
      */
-    previousBook (state) {
-        if (state.loading) return null
-        return getPreviousBook(state, state.currentBook)
+    previousBookOfKey (state) {
+        return (key) => {
+            if (state.loading) return null
+            const idx = state.indexData.books.findIndex(a => a[0] == key)
+            if (idx - 1 >= 0)
+                return state.indexData.books[idx - 1][0]
+            else
+                return null
+        }
     },
     /**
-     * Name (key) of the next book, if it exists.
+     * Returns the key of the previous book, or null.
      */
-    nextBook (state) {
-        if (state.loading) return null
-        return getNextBook(state, state.currentBook)
+    previousBook (state, getters) {
+        return getters.previousBookOfKey(state.currentBook)
+    },
+    /**
+     * Returns the book key after the one with the given key,
+     * or null if it is the last book.
+     */
+    nextBookOfKey (state) {
+        return (key) => {
+            if (state.loading) return null
+            const idx = state.indexData.books.findIndex(a => a[0] == key)
+            if (idx + 1 < state.indexData.books.length)
+                return state.indexData.books[idx + 1][0]
+            else
+                return null
+        }
+    },
+    /**
+     * Returns the key of the next book, or null.
+     */
+    nextBook (state, getters) {
+        return getters.nextBookOfKey(state.currentBook)
     },
     /**
      * The list of chapters of the current book as
@@ -420,35 +442,35 @@ const getters  = {
     /**
      * The src of the image, when displayMode is 'onePage'.
      */
-    currentPageImgSrc (state) {
+    currentPageImgSrc (state, getters) {
         if (state.loading) return null
         const number = state.currentPage + state.bookData.offset
-        return getImgSrc(state, number)
+        return getters.imgSrc(number)
     },
     /**
      * The src of the left (even) image, when displayMode is 'twoPages'.
      */
-    currentPageImgPaireSrc (state) {
+    currentPageImgPaireSrc (state, getters) {
         if (state.loading) return null
-        const pagePaire = getPagePaire(state)
+        const pagePaire = getters.pagePaire
         if (pagePaire === null) {
             return null
         } else {
             const numPair = state.bookData.offset + pagePaire
-            return getImgSrc(state, numPair)
+            return getters.imgSrc(numPair)
         }
     },
     /**
      * The src of the right (odd) image, when displayMode is 'twoPages'.
      */
-    currentPageImgImpaireSrc (state) {
+    currentPageImgImpaireSrc (state, getters) {
         if (state.loading) return null
-        const pageImpaire = getPageImpaire(state)
+        const pageImpaire = getters.pageImpaire
         if (pageImpaire === null) {
             return null
         } else {
             const numImpair = state.bookData.offset + pageImpaire
-            return getImgSrc(state, numImpair)
+            return getters.imgSrc(numImpair)
         }
     },
     /**
@@ -495,7 +517,7 @@ const getters  = {
                         errata.push(key)
                 } else if (state.displayMode === 'twoPages') {
                     if (errors[key] && errors[key].find(p =>
-                            p == getPagePaire(state) || p == getPageImpaire(state)
+                            p == getters.pagePaire || p == getters.pageImpaire
                         ))
                         errata.push(key)
                 }
@@ -595,18 +617,13 @@ const actions = {
      * Page increment from a button, or gesture.
      */
     incrementPage ({ commit, state, dispatch, getters }) {
-        var page = getRightOrOnlyPage(state) + (state.displayMode === 'twoPages' ? 2 : 1)
-        if (page >= state.bookData.min && page <= state.bookData.max) {
-            commit('changePageInSameBook', page)
+        const page = getters.nextPage
+        if (page === null) {
+            // go to the next book if applicable
+            if (getters.nextBook)
+                dispatch('changeBook', { key: getters.nextBook, page : 'min' })
         } else {
-            page = getRightOrOnlyPage(state) + 1
-            if ((state.displayMode === 'twoPages') && (page >= state.bookData.min && page <= state.bookData.max)) {
-                commit('changePageInSameBook', page)
-            } else {
-                // go to the next book if applicable
-                if (getters.nextBook)
-                    dispatch('changeBook', { key: getters.nextBook, page : 'min' })
-            }
+            commit('changePageInSameBook', page)
         }
         if (state.displayMode === 'onePage') // scroll to the top
             document.body.scrollTop = document.documentElement.scrollTop = 0
@@ -615,18 +632,13 @@ const actions = {
      * Page decrement from a button, or gesture.
      */
     decrementPage ({ commit, state, dispatch, getters }) {
-        var page = getRightOrOnlyPage(state) - (state.displayMode === 'twoPages' ? 2 : 1)
-        if (page >= state.bookData.min && page <= state.bookData.max) {
-            commit('changePageInSameBook', page)
+        const page = getters.previousPage
+        if (page === null) {
+            // go to the previous book if applicable
+            if (getters.previousBook)
+                dispatch('changeBook', { key: getters.previousBook, page: 'max' })        
         } else {
-            page = getRightOrOnlyPage(state) - 1
-            if ((state.displayMode === 'twoPages') && (page >= state.bookData.min && page <= state.bookData.max)) {
-                commit('changePageInSameBook', page)
-            } else {
-                // go to the previous book if applicable
-                if (getters.previousBook)
-                    dispatch('changeBook', { key: getters.previousBook, page: 'max' })
-            }
+            commit('changePageInSameBook', page)
         }
     },
     /**
@@ -659,12 +671,12 @@ const actions = {
                 })
             } else {
                 var nextBook, previousBook
-                if (currentPage > bookData.max && (nextBook = getNextBook(state, key))) {
+                if (currentPage > bookData.max && (nextBook = getters.nextBookOfKey(key))) {
                     dispatch('changeBook', {
                         key: nextBook,
                         page: newValue
                     })
-                } else if (currentPage < bookData.min && (previousBook = getPreviousBook(state, key))) {
+                } else if (currentPage < bookData.min && (previousBook = getters.previousBookOfKey(key))) {
                     dispatch('changeBook', {
                         key: previousBook,
                         page: newValue
