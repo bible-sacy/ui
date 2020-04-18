@@ -104,6 +104,7 @@ select, input {
     max-width: 49%;
     min-width: 5%;
     font-size: medium;
+    vertical-align: top;
 }
 
 .hover-cursor:hover {
