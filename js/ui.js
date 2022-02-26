@@ -21,6 +21,11 @@ const BASE = UI_ENV.dataBasePath
 const PDFS_BASE = `${BASE}pdfs`
 
 /**
+ * How page numbers are written.
+ */
+const NUMBER_FORMAT = UI_ENV.numberFormat || (n => n)
+
+/**
  * Node in the head section: <link id="canonical" rel="canonical" href="…" />
  */
 const CANONICAL_NODE = document.getElementById("canonical")
@@ -276,11 +281,12 @@ const getters  = {
         return (number) => {
             if (state.loading) return null
             const folder = state.bookData.folder
+            const n = NUMBER_FORMAT(number)
             if (folder.match('/')) {
                 const [suffix, f] = folder.split('/', 2)
-                return `${BASE}pngs${suffix}/${f}/${f}-${number}.png`
+                return `${BASE}pngs${suffix}/${f}/${f}-${n}.png`
             } else {
-                return `${BASE}pngs/${folder}/${folder}-${number}.png`
+                return `${BASE}pngs/${folder}/${folder}-${n}.png`
             }
         }
     },
