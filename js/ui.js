@@ -210,6 +210,23 @@ const convertToRoman = (num) => {
  * Getters for Vuex.
  */
 const getters  = {
+
+    minPage (state) {
+        if (state.bookData) {
+            console.log("min Page is", state.bookData.min)
+            return state.bookData.min
+        }
+        else
+            return null
+    },
+
+    maxPage (state) {
+        if (state.bookData)
+            return state.bookData.max
+        else
+            return null
+    },
+
     /**
      * Returns the odd (right) page number that should
      * be displayed when displayMode is "twoPages".
@@ -757,7 +774,7 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                 'showInfo',
                 'displayMode',
                 'currentBook',
-                'currentPage',
+                'currentPage'
               ]),
             ...Vuex.mapGetters([
                 'links',
@@ -780,7 +797,9 @@ fetch(`${UI_ENV.uiPath}/ui.html`)
                 'pageStyle',
                 'pagePaireStyle',
                 'pageImpaireStyle',
-                'shortcuts'
+                'shortcuts',
+                'minPage',
+                'maxPage'
             ])
         },
         methods: {

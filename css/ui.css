@@ -84,7 +84,7 @@ select, input {
 #hammer {
     margin: auto;
     text-align: center;
-    padding-top: 0.5em;
+    padding-top: 0.2em;
     padding-bottom: 0.2em;
 }
 
@@ -133,4 +133,42 @@ select, input {
 
 .darkmode-toggle {
     z-index: 10 !important;
+}
+
+
+.slidecontainer {
+    margin-top: 0.2em;
+    width: 98%;
+}
+  
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 1.3em;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+    cursor: pointer;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+  
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 1.3em;
+    height: 1.3em;
+    background: black;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 1.3em;
+    height: 1.3em;
+    background: black;
+    cursor: pointer;
 }

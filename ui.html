@@ -52,6 +52,10 @@
         </div>
     </div>
 
+    <div class="slidecontainer">
+        <input v-bind:value="currentPage" v-on:change="changePage(parseInt($event.target.value))" type="range" v-bind:min="minPage" v-bind:max="maxPage" class="slider" id="headerRange">
+    </div>
+
     <div id="pageSelectorSection">
         <button id="prev-top" title="Page précédente (←|r)" v-on:click="decrementPage">&larr;</button>
         &nbsp;
