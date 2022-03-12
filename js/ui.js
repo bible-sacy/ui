@@ -1,6 +1,25 @@
 const ui_init = (UI_ENV) => {
 
 /**
+ * From https://github.com/github/fetch/pull/92#issuecomment-174730593
+ * @param {*} url 
+ * @returns 
+ */
+function fetchXHR(url) {
+    return new Promise(function(resolve, reject) {
+        var xhr = new XMLHttpRequest
+        xhr.onload = function() {
+            resolve(new Response(xhr.responseText, {status: xhr.status}))
+        }
+        xhr.onerror = function() {
+            reject(new TypeError('Local request failed'))
+        }
+        xhr.open('GET', url)
+        xhr.send(null)
+    })
+}
+
+/**
  * Title of the document.
  */
 const DOCUMENT_TITLE = UI_ENV.title
@@ -589,7 +608,7 @@ const actions = {
      * the location hash changes from the outside.
      */
     fetchInitData ({ commit }, locationHash) {
-        fetch(`${BASE}index.json`)
+        fetchXHR(`${BASE}index.json`)
         .then(response => response.json())
         .then(indexData => {
             var currentBook = indexData.default
@@ -603,7 +622,7 @@ const actions = {
                     console.warn("Unknown book in the location hash:", locationBook)
                 }
             }
-            fetch(`${BASE}jsons/${currentBook}.json`)
+            fetchXHR(`${BASE}jsons/${currentBook}.json`)
             .then(response => response.json())
             .then(bookData => {
                 commit('init', {
@@ -675,7 +694,7 @@ const actions = {
      * Changes the book.
      */
     changeBook ({ commit, state, getters, dispatch }, { key, page }) {
-        fetch(`${BASE}jsons/${key}.json`)
+        fetchXHR(`${BASE}jsons/${key}.json`)
         .then(response => response.json())
         .then(bookData => {
             currentPage = bookData.chapters[0][1]
@@ -738,7 +757,7 @@ const focusOrBlur = (event, id) => {
  * Fetches the Vue template (ui.html)
  * and initializes Vue with the Vuex store.
  */
-fetch(`${UI_ENV.uiPath}/ui.html`)
+fetchXHR(`${UI_ENV.uiPath}/ui.html`)
 .then(res => res.text())
 .then(template => {
     new Vue({
