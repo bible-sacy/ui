@@ -793,7 +793,8 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
                 'showInfo',
                 'displayMode',
                 'currentBook',
-                'currentPage'
+                'currentPage',
+                'zoom'
               ]),
             ...Vuex.mapGetters([
                 'links',
