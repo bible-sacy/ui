@@ -1,8 +1,9 @@
 (function() {
     new Darkmode({
-        top: '1em',
-        right: '1em',
+        bottom: 'unset',
+        top: '0.5em',
         left: 'unset',
+        right: '0.5em',
         label: '🌓'
     }).showWidget();
 })()

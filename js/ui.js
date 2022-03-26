@@ -99,7 +99,11 @@ const shortcuts = [
     },
     {
         key: 'i',
-        str: 'cacher ou fermer ces informations'
+        str: 'cacher ou afficher ces informations'
+    },
+    {
+        key: 'n',
+        str: 'cacher ou afficher la barre de navigation'
     }
 ]
 
@@ -109,6 +113,7 @@ const shortcuts = [
 const state = {
     loading: true,
     showInfo: false,
+    showNavBar: true,
     displayMode : 'onePage', // 'onePage' or 'twoPages'
     indexData: null, // content of index.json
     currentBook: null,
@@ -150,6 +155,12 @@ const mutations = {
      */
     toggleInfo (state) {
         state.showInfo = !state.showInfo
+    },
+    /**
+     * Show or hide the navigation bar.
+     */
+    toggleNavBar (state) {
+        state.showNavBar = !state.showNavBar
     },
     /**
      * Display with one or two pages.
@@ -791,6 +802,7 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
             ...Vuex.mapState([
                 'loading',
                 'showInfo',
+                'showNavBar',
                 'displayMode',
                 'currentBook',
                 'currentPage',
@@ -864,6 +876,9 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
                     case 'i':
                         this.toggleInfo()
                         break
+                    case 'n':
+                        this.toggleNavBar()
+                        break
                     case 'v':
                         this.toggleDisplayMode()
                         break
@@ -912,6 +927,7 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
             },
             ...Vuex.mapMutations([
                 'toggleInfo',
+                'toggleNavBar',
                 'toggleDisplayMode',
                 'incrZoom',
                 'decrZoom'
