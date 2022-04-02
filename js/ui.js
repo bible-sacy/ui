@@ -40,6 +40,11 @@ const BASE = UI_ENV.dataBasePath
 const PDFS_BASE = `${BASE}pdfs`
 
 /**
+ * What text to display at the bottom of the pages.
+ */
+const FOOTER_TEXT = UI_ENV.footerText || "Digitized by Google"
+
+/**
  * How page numbers are written.
  */
 const NUMBER_FORMAT = UI_ENV.numberFormat || (n => n)
@@ -372,6 +377,12 @@ const getters  = {
         return CANONICAL
     },
     /**
+     * The footer text.
+     */
+    footerText () {
+        return FOOTER_TEXT
+    },
+    /**
      * The list of sites as { title, url } to show in the selector.
      */
     sites () {
@@ -591,6 +602,14 @@ const getters  = {
         window.location.hash = hash
         CANONICAL_NODE.setAttribute('href', `${CANONICAL}/${hash}`)
         return hash
+    },
+    /**
+     * Returns the permalink
+     */
+    permalink (state, getters) {
+        if (getters.locationHash)
+            return `${CANONICAL}/${getters.locationHash}`
+        return `${CANONICAL}`
     },
     /**
      * Triggers the title change.
@@ -825,6 +844,8 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
                 'pdfLink',
                 'errata',
                 'locationHash',
+                'permalink',
+                'footerText',
                 'title',
                 'pageStyle',
                 'pagePaireStyle',

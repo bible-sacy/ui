@@ -147,11 +147,11 @@ select, input {
 .slidecontainer {
     margin-top: 0.2em;
     text-align: right;
+    display: flex;
 }
   
 .slider {
     -webkit-appearance: none;
-    width: 90%;
     height: 1.5em;
     background: grey;
     outline: none;
@@ -159,6 +159,9 @@ select, input {
     -webkit-transition: .2s;
     transition: opacity .2s;
     cursor: pointer;
+    flex-grow: 1;
+    margin-left: 1em;
+    margin-right: 0.5em;
 }
 
 .slider:hover {
@@ -191,11 +194,13 @@ select, input {
     text-align: right;
 }
 
-/*#stickyToggleNavBar {
-    position: absolute;
-    right: 0.1em;
-    bottom: 0.1em;
-}*/
+#toggleNavBar {
+    min-width: 4em;
+}
+
+#stickyToggleNavBar {
+    min-width: 4em;
+}
 
 #digitizedDivCenter {
     margin:auto;

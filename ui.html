@@ -51,7 +51,7 @@
             <div id="digitizedDivCenter"
                 v-if="showNavBar">
 
-                Digitized by Google
+                {{ footerText }}
 
             </div>
 
@@ -60,7 +60,7 @@
 
                 <span id="digitizedSpanRight">
                     
-                    Digitized by Google
+                    {{ footerText }}
                 
                 </span>
 
@@ -70,7 +70,7 @@
                         v-on:click="toggleNavBar">
         
                         <span id="toggleNavBarIcon">
-                            {{ showNavBar ? '˅' : '˄' }}
+                            {{ showNavBar ? ' ˅ ' : ' ˄ ' }}
                         </span>
                         
                         <span class="small-hide">&nbsp;navigation</span>
@@ -90,7 +90,7 @@
                 
                 <hr />
                 
-                Page courante tirée de :
+                <a v-bind:href="permalink">Page courante (permalien)</a> tirée de :
                 <span id="bookInfo">{{ bookInfo }}</span>,
                 <span id="editionInfo">{{ editionInfo }}</span>
                 
@@ -282,7 +282,7 @@
                     v-on:click="toggleNavBar">
     
                     <span id="toggleNavBarIcon">
-                        {{ showNavBar ? '˅' : '˄' }}
+                        {{ showNavBar ? ' ˅ ' : ' ˄ ' }}
                     </span>
     
                 </button>
