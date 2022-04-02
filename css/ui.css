@@ -212,10 +212,13 @@ select, input {
     margin:auto;
     text-align: right;
     font-size: x-small;
+    display: flex;
+    flex-direction: row;
 }
 
 #digitizedSpanRight {
-    margin-right: 30%;
+    flex-grow: 1;
+    text-align: center;
 }
 
 .darkmode--activated #navContainer {
