@@ -232,3 +232,13 @@ select, input {
 .darkmode--activated #infoWindow {
     color: white;
 }
+
+*[tooltip]:focus:after {
+    content: attr(tooltip);
+    display:block;
+    position: absolute;
+    background-color: lightgreen;
+    box-shadow: 0.2em 0.2em 0.05em grey;
+    padding: 0.2em;
+    border-radius: 0.5em;
+}

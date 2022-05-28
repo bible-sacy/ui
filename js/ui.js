@@ -248,7 +248,6 @@ const getters  = {
 
     minPage (state) {
         if (state.bookData) {
-            console.log("min Page is", state.bookData.min)
             return state.bookData.min
         }
         else

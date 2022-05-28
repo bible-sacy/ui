@@ -90,26 +90,19 @@
                 
                 <hr />
                 
-                <a v-bind:href="permalink">Page courante (permalien)</a> tirée de :
+                Page courante tirée de :
                 <span id="bookInfo">{{ bookInfo }}</span>,
                 <span id="editionInfo">{{ editionInfo }}</span>
                 
-                <a id="pdfLink"
-                    target="_blank"
-                    v-bind:href="pdfLink">
-                    (pdf original)
-                </a>
+                (<a id="pdfLink" target="_blank" v-bind:href="pdfLink">PDF</a> d’origine)
+
+                <button id="permalink" tooltip="Permalien copié !" v-bind:data-clipboard-text="permalink">📋 Copier le permalien</button>
                 
                 <br />
                 
                 <br />
                 
-                <span v-for="link in links" :key="link.url">
-                    &ThickSpace;<a v-bind:href="link.url"
-                        target="_blank">
-                            {{ link.title }}
-                    </a>&ThickSpace;
-                </span>
+                <span v-for="link in links" :key="link.url">&ThickSpace;<a v-bind:href="link.url" target="_blank">{{ link.title }}</a>&ThickSpace;</span>
                 
                 <br />
                 
