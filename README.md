@@ -62,6 +62,8 @@
     <script>ui_init(UI_ENV)</script>
     <script src="ui/js/lib/darkmode-js.min.js"></script>
     <script src="ui/js/darkmode.js"></script>
+    <script src="ui/js/lib/clipboard.min.js"></script>
+    <script src="ui/js/clipboard.js"></script>
 </body>
 ```
 

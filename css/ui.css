@@ -11,6 +11,11 @@ body {
     display: table;
 }
 
+.top-fixed {
+    position: fixed;
+    top: 0;
+}
+
 #uiTemplate {
     display: table-cell;
     vertical-align: bottom;
@@ -29,7 +34,8 @@ div.image {
     text-align: center;
 }
 
-select, input {
+#headerBarSection select,
+#headerBarSection input {
     height: 1.8em;
 }
 
@@ -69,8 +75,9 @@ select, input {
     margin-right: auto;
 }
 
-#pages {
+.pages {
     max-width: 3em;
+    text-align: center;
 }
 
 #prev-top, #next-top {
@@ -78,7 +85,7 @@ select, input {
     font-weight: bold;
 }
 
-#page-form {
+.page-form {
     display: inline;  
 }
 
@@ -221,16 +228,21 @@ select, input {
     text-align: center;
 }
 
-.darkmode--activated #navContainer {
+.darkmode--activated #navContainer,
+.darkmode--activated #navContainer button,
+.darkmode--activated #navContainer select,
+.darkmode--activated #navContainer input{
     background-color: black;
+    color: white;
+}
+
+.darkmode--activated #navContainer .slidecontainer input{
+    background-color: grey;
+    color: white;
 }
 
 .darkmode--activated  img {
     filter: invert(100%);
-}
-
-.darkmode--activated #infoWindow {
-    color: white;
 }
 
 *[tooltip]:focus:after {
@@ -241,4 +253,9 @@ select, input {
     box-shadow: 0.2em 0.2em 0.05em grey;
     padding: 0.2em;
     border-radius: 0.5em;
+}
+
+.darkmode--activated [tooltip]:focus:after {
+    background-color: green;
+    box-shadow: none;
 }
