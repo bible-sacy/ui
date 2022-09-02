@@ -212,13 +212,13 @@ div.image {
 #digitizedDivCenter {
     margin:auto;
     text-align: center;
-    font-size: x-small;
+    font-size: small;
 }
 
 #digitizedDivRight {
     margin:auto;
     text-align: right;
-    font-size: x-small;
+    font-size: small;
     display: flex;
     flex-direction: row;
 }

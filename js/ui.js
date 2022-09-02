@@ -45,6 +45,12 @@ const PDFS_BASE = `${BASE}pdfs`
 const FOOTER_TEXT = UI_ENV.footerText || "Digitized by Google"
 
 /**
+ * What link to display at the bottom of the pages.
+ */
+const FOOTER_LINK_LABEL = UI_ENV.footerLinkLabel || "Autres livres de Port-Royal"
+const FOOTER_LINK = UI_ENV.footerLink || "https://www.sacy.be"
+
+/**
  * How page numbers are written.
  */
 const NUMBER_FORMAT = UI_ENV.numberFormat || (n => n)
@@ -380,6 +386,18 @@ const getters  = {
      */
     footerText () {
         return FOOTER_TEXT
+    },
+    /**
+     * The footer link href.
+     */
+    footerLink () {
+        return FOOTER_LINK
+    },
+    /**
+     * The footer link text.
+     */
+    footerLinkLabel () {
+        return FOOTER_LINK_LABEL
     },
     /**
      * The list of sites as { title, url } to show in the selector.
@@ -845,6 +863,8 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
                 'locationHash',
                 'permalink',
                 'footerText',
+                'footerLink',
+                'footerLinkLabel',
                 'title',
                 'pageStyle',
                 'pagePaireStyle',
