@@ -154,6 +154,7 @@ const mutations = {
         const displayMode = myStorage.getItem('displayMode')
         if (displayMode === 'onePage' || displayMode === 'twoPages')
             state.displayMode = displayMode
+        state.showNavBar = !(myStorage.getItem('showNavBar') === 'false')
         const z = myStorage.getItem('zoom')
         if (z) {
             zoom = parseInt(z)
@@ -172,6 +173,7 @@ const mutations = {
      */
     toggleNavBar (state) {
         state.showNavBar = !state.showNavBar
+        myStorage.setItem('showNavBar', state.showNavBar)
     },
     /**
      * Display with one or two pages.
@@ -618,6 +620,7 @@ const getters  = {
         const hash = `#/${state.currentBook}/${state.currentPage}`
         window.location.hash = hash
         CANONICAL_NODE.setAttribute('href', `${CANONICAL}/${hash}`)
+        myStorage.setItem('lastLocationHash', hash)
         return hash
     },
     /**
@@ -659,7 +662,10 @@ const actions = {
         .then(response => response.json())
         .then(indexData => {
             var currentBook = indexData.default
-            var currentPage = null 
+            var currentPage = null
+            if (location.hash === '') {
+                locationHash = myStorage.getItem('lastLocationHash')
+            }
             if (locationHash && (m = locationHash.match(/#\/(.+)\/(.+)/))) {
                 locationBook = m[1]
                 if (indexData.books.find(a => a[0] === locationBook)) {
@@ -818,6 +824,11 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
             window.addEventListener('keydown', this.keyListener)
         },
         mounted () {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                let button = document.getElementById('newTabButton')
+                if (button)
+                    button.parentNode.removeChild(button)
+            }
             // Sets up the swipe navigation.
             const swipeElement = document.getElementById('hammer');
             if (swipeElement == null)
