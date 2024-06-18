@@ -109,6 +109,15 @@ div.image {
     border-color: gray;
 }
 
+@media all and (display-mode: standalone) {
+    #newTabButton {
+        display: none;
+    }
+    #installButton {
+        display: none;
+    }
+}
+
 #page {
     max-width: 100%;
     min-width: 10%;

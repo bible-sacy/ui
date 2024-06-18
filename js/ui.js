@@ -824,11 +824,24 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
             window.addEventListener('keydown', this.keyListener)
         },
         mounted () {
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                let button = document.getElementById('newTabButton')
-                if (button)
-                    button.parentNode.removeChild(button)
-            }
+            // Pprogressive web app installation button
+            window.addEventListener('beforeinstallprompt', (e) => {
+                let deferredInstallPrompt = e;
+                if (deferredInstallPrompt != null) {
+                    const installButton = document.getElementById('installButton');
+                    installButton.addEventListener('click', async () => {
+                        console.log(deferredInstallPrompt)
+                        if (deferredInstallPrompt != null) {
+                            deferredInstallPrompt.prompt();
+                            const { outcome } = await deferredInstallPrompt.userChoice;
+                            if (outcome === 'accepted') {
+                                deferredInstallPrompt = null;
+                            }
+                        }
+                    });
+                    installButton.style.display = 'inline'
+                }
+            });
             // Sets up the swipe navigation.
             const swipeElement = document.getElementById('hammer');
             if (swipeElement == null)
