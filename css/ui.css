@@ -109,7 +109,7 @@ div.image {
     border-color: gray;
 }
 
-@media all and (display-mode: standalone) {
+@media (display-mode: fullscreen) or (display-mode: standalone)  {
     #newTabButton {
         display: none;
     }
