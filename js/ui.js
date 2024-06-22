@@ -824,7 +824,12 @@ fetchXHR(`${UI_ENV.uiPath}/ui.html`)
             window.addEventListener('keydown', this.keyListener)
         },
         mounted () {
-            // Pprogressive web app installation button
+            // Disabling useless button(s) in Android apps
+            if (typeof window.Android !== "undefined") {
+                const newTabButton = document.getElementById('newTabButton')
+                if (newTabButton) newTabButton.style.display = 'none'
+            }
+            // Progressive web app installation button
             window.addEventListener('beforeinstallprompt', (e) => {
                 let deferredInstallPrompt = e;
                 if (deferredInstallPrompt != null) {
