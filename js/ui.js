@@ -620,7 +620,7 @@ const getters  = {
         const hash = `#/${state.currentBook}/${state.currentPage}`
         window.location.hash = hash
         CANONICAL_NODE.setAttribute('href', `${CANONICAL}/${hash}`)
-        myStorage.setItem('lastLocationHash', hash)
+        myStorage.setItem(`${window.location.pathname.replace("/", "")}lastLocationHash`, hash)
         return hash
     },
     /**
@@ -664,7 +664,7 @@ const actions = {
             var currentBook = indexData.default
             var currentPage = null
             if (location.hash === '') {
-                locationHash = myStorage.getItem('lastLocationHash')
+                locationHash = myStorage.getItem(`${window.location.pathname.replace("/", "")}lastLocationHash`)
             }
             if (locationHash && (m = locationHash.match(/#\/(.+)\/(.+)/))) {
                 locationBook = m[1]
